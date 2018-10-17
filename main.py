@@ -7,12 +7,16 @@ from audioDataAnalysis.representation import get_LDA
 from scipy import misc
 
 mypath = '../KaggleData/'
-path = '../KaggleData/Spectrograms/spec_blackman/'
+path = '../KaggleData/Spectrograms/scipy/'
 labels_path = '../KaggleData/train.csv'
-save_path = '../KaggleData/DIYS3/'
+save_path = '../KaggleData/DIYS_scipy/'
+
+matplot = [230, 374, 33, 528]
+scipy = 0
+mel = 0
 
 if __name__ == '__main__':
     label = get_labels(labels_path)
     print('Doing it for ' + path)
     get_full_final_enhanced(path, save_path, label, noisy_copies=1,
-                            validation_split=0.1, _crop=[230, 374, 33, 528], _s=[32, 32, 3], gray=True)
+                            validation_split=0.1, _crop=scipy, _s=[32, 32, 3], gray=True)

@@ -7,12 +7,22 @@ from Lib import csv
 import os, shutil
 from math import floor
 from random import randint
+from PIL import Image, ImageChops
 
 
 def split_list(alist, wanted_parts=1):
     length = len(alist)
     return [alist[i*length // wanted_parts: (i+1)*length // wanted_parts]
              for i in range(wanted_parts) ]
+
+
+def trim(im):
+    bg = Image.new(im.mode, im.size, im.getpixel((0,0)))
+    diff = ImageChops.difference(im, bg)
+    diff = ImageChops.add(diff, diff, 2.0, -100)
+    bbox = diff.getbbox()
+    if bbox:
+        return im.crop(bbox)
 
 
 def get_labels(file, format='dict'):
@@ -22,7 +32,7 @@ def get_labels(file, format='dict'):
             reader = csv.reader(f, dialect='excel')
             for row in reader:
                 labels[row[0]] = row[1]
-    elif format=='array':
+    elif format == 'array':
         labels = list()
         with open(file, 'r') as f:
             reader = csv.reader(f, dialect='excel')
@@ -63,6 +73,8 @@ def get_images_ready_alexnet_batch(files, path, size):
 
 
 def get_final_image(im, crop=(6, 374, 33, 528), size=(224, 224, 3), order='Tensorflow', gray=False):
+    if crop == 0:
+        crop = (0, im.shape[0]-1, 0, im.shape[1]-1)
     if gray:
         final_im = im[crop[0]: crop[1], crop[2]: crop[3]]
         if size == 'original':
@@ -73,7 +85,7 @@ def get_final_image(im, crop=(6, 374, 33, 528), size=(224, 224, 3), order='Tenso
         if size == 'original':
             return final_im
         final = imresize(final_im, size)
-    if order=='Theano':
+    if order == 'Theano':
         final = final.transpose((2, 0, 1))
         print(final.shape)
     return final
@@ -221,7 +233,8 @@ def delete_files(path):
             print(e)
 
 
-def get_full_final_enhanced(path, save_path, label, noisy_copies=2, test_value=0.2, validation_split=0.0,  seed=60, _s=(224, 224, 3), _crop=(6, 374, 33, 528), gray=False):
+def get_full_final_enhanced(path, save_path, label, noisy_copies=2, test_value=0.2, validation_split=0.0,  seed=60,
+                            _s=(224, 224, 3), _crop=(6, 374, 33, 528), gray=False):
     files = get_files(path)
     random.seed(seed)
     random.shuffle(files)
@@ -239,11 +252,19 @@ def get_full_final_enhanced(path, save_path, label, noisy_copies=2, test_value=0
     times = [time.time()]
     for name in files:
         n += 1
-        im = imread(path + name)
-        im2, im3 = cut_translate(im, 0.8)
-        final = get_final_image(im, crop=_crop, size=_s)
-        final2 = get_final_image(im2, crop=_crop, size=_s)
-        final3 = get_final_image(im3, crop=_crop, size=_s)
+        if _crop == 0:
+            im = Image.open(path + name)
+            im = np.array(trim(im))
+            im2, im3 = cut_translate(im, 0.8)
+            final = get_final_image(im, crop=_crop, size=_s)
+            final2 = get_final_image(im2, crop=_crop, size=_s)
+            final3 = get_final_image(im3, crop=_crop, size=_s)
+        else:
+            im = imread(path + name)
+            im2, im3 = cut_translate(im, 0.8)
+            final = get_final_image(im, crop=_crop, size=_s)
+            final2 = get_final_image(im2, crop=_crop, size=_s)
+            final3 = get_final_image(im3, crop=_crop, size=_s)
         if gray:
             #get gray image
             final = rgb2gray(final)

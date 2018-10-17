@@ -2,16 +2,15 @@ from __future__ import division
 import keras
 import os
 from keras.preprocessing.image import ImageDataGenerator
-import time
 
-print('Using Keras 33version', keras.__version__)
+print('Using Keras version', keras.__version__)
 
 save_path = 'results/'
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 
-tag = '32_gray_enhanced_dropout'
-folder = 'DIYS3'
+tag = 'scipy_32_gray_enhanced_dropout'
+folder = 'DIYS_scipy'
 
 
 input_size = [32, 32, 1]
@@ -71,12 +70,11 @@ nn = get_nn32_1(input_size)
 nn.compile(optimizer='sgd', loss='binary_crossentropy', metrics=['accuracy'])
 
 history = nn.fit_generator(data_generator,
-                        samples_per_epoch=data_generator.samples,
-                        validation_data=val_gen,
-                        validation_steps=val_gen.samples/batch_size,
-                        nb_epoch=60,
-                        verbose=2)
-
+                           samples_per_epoch=data_generator.samples,
+                           validation_data=val_gen,
+                           validation_steps=val_gen.samples/batch_size,
+                           epochs=10,
+                           verbose=2)
 
 
 score = nn.evaluate_generator(test_gen, steps=test_gen.samples/batch_size)

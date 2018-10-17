@@ -48,7 +48,7 @@ history = autoencoder.fit_generator(data_generator,
                         samples_per_epoch=7000,
                         validation_data=val_gen,
                         validation_steps=10,
-                        nb_epoch=9,
+                        epochs=9,
                         verbose=2)
 
 

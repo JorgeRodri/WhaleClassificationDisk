@@ -8,7 +8,6 @@ from tqdm import tqdm
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
 
-
 def parallel_process(array, function, n_jobs=16, use_kwargs=False, front_num=3):
     """
         A parallel version of the map function with a progress bar. 

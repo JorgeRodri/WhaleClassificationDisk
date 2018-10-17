@@ -61,7 +61,7 @@ history = nn.fit_generator(data_generator,
                         samples_per_epoch=3000,
                         # validation_data=test_gen,
                         nb_val_samples=800,
-                        nb_epoch=16,
+                        epochs=16,
                         verbose=1)
 
 

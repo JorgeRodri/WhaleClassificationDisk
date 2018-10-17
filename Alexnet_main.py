@@ -42,7 +42,7 @@ if __name__ == '__main__':
                                   samples_per_epoch=1500,
                                   # validation_data=validation_generator,
                                   nb_val_samples=800,
-                                  nb_epoch=16,
+                                  epochs=16,
                                   verbose=1)
 
     score = model.evaluate_generator(test_gen, steps=200)
