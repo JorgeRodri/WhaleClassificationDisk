@@ -40,7 +40,7 @@ def get_labels(file, format='dict'):
                 labels.append(row)
     else:
         print('Wrong Format', 'Choose between: array and dict')
-        labels=None
+        labels = None
     return labels
 
 

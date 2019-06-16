@@ -6,35 +6,36 @@ import numpy as np
 
 from PIL import Image
 
+
 def pca(X):
-  """  Principal Component Analysis
-    input: X, matrix with training data stored as flattened arrays in rows
-    return: projection matrix (with important dimensions first), variance
-    and mean."""
+    """    Principal Component Analysis
+        input: X, matrix with training data stored as flattened arrays in rows
+        return: projection matrix (with important dimensions first), variance
+        and mean."""
 
-  # get dimensions
-  num_data, dim = X.shape
+    # get dimensions
+    num_data, dim = X.shape
 
-  # center data
-  mean_X = X.mean(axis=0)
-  X = X - mean_X
+    # center data
+    mean_X = X.mean(axis=0)
+    X = X - mean_X
 
-  if dim>num_data:
-    # PCA - compact trick used
-    M = np.dot(X,X.T) # covariance matrix
-    e,EV = np.linalg.eigh(M) # eigenvalues and eigenvectors
-    tmp = np.dot(X.T,EV).T # this is the compact trick
-    V = tmp[::-1]# reverse since last eigenvectors are the ones we want
-    S = np.sqrt(e)[::-1]# reverse since eigenvalues are in increasing order
-    for i in range(V.shape[1]):
-      V[:,i] /= S
-  else:
-    # PCA - SVD used
-    U,S,V = np.linalg.svd(X)
-    V = V[:num_data] # only makes sense to return the first num_data
+    if dim > num_data:
+        # PCA - compact trick used
+        M = np.dot(X, X.T)  # covariance matrix
+        e, EV = np.linalg.eigh(M)  # eigenvalues and eigenvectors
+        tmp = np.dot(X.T, EV).T  # this is the compact trick
+        V = tmp[::-1]  # reverse since last eigenvectors are the ones we want
+        S = np.sqrt(e)[::-1]  # reverse since eigenvalues are in increasing order
+        for i in range(V.shape[1]):
+            V[:, i] /= S
+    else:
+        # PCA - SVD used
+        U, S, V = np.linalg.svd(X)
+        V = V[:num_data]  # only makes sense to return the first num_data
 
-  # return the projection matrix, the variance and the mean
-  return V, S, mean_X
+    # return the projection matrix, the variance and the mean
+    return V, S, mean_X
 
 
 def graph_spectrogram(wav_file,save_name):
@@ -50,9 +51,11 @@ def graph_spectrogram(wav_file,save_name):
                 bbox_inches='tight',
                 pad_inches=0) # Spectrogram saved as a .png
 
+
 def get_wav_info(wav_file):
     rate, data = wavfile.read(wav_file)
     return rate, data
+
 
 def get_PCA():
     with open('features.txt', 'rb') as f:
@@ -113,9 +116,10 @@ def get_PCA():
 
 
 def get_PCA_image():
-    y=np.array()
 
-    y=np.array(y)
+    y = np.array()
+
+    y = np.array(y)
     target_names = ['No whale', 'Right whale']
 
     plt.figure()
@@ -164,6 +168,7 @@ def get_PCA_image():
 
 
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
+
 
 def get_LDA():
     with open('features.txt', 'rb') as f:

@@ -23,15 +23,15 @@ def parallel_process(array, function, n_jobs=16, use_kwargs=False, front_num=3):
         Returns:
             [function(array[0]), function(array[1]), ...]
     """
-    #We run the first few iterations serially to catch bugs
+    # We run the first few iterations serially to catch bugs
     if front_num > 0:
         front = [function(**a) if use_kwargs else function(a) for a in array[:front_num]]
-    #If we set n_jobs to 1, just run a list comprehension. This is useful for benchmarking and debugging.
-    if n_jobs==1:
+    # If we set n_jobs to 1, just run a list comprehension. This is useful for benchmarking and debugging.
+    if n_jobs == 1:
         return front + [function(**a) if use_kwargs else function(a) for a in tqdm(array[front_num:])]
-    #Assemble the workers
+    # Assemble the workers
     with ProcessPoolExecutor(max_workers=n_jobs) as pool:
-        #Pass the elements of array into function
+        # Pass the elements of array into function
         if use_kwargs:
             futures = [pool.submit(function, **a) for a in array[front_num:]]
         else:
@@ -42,17 +42,18 @@ def parallel_process(array, function, n_jobs=16, use_kwargs=False, front_num=3):
             'unit_scale': True,
             'leave': True
         }
-        #Print out the progress as tasks complete
+        # Print out the progress as tasks complete
         for f in tqdm(as_completed(futures), **kwargs):
             pass
     out = []
-    #Get the results from the futures.
+    # Get the results from the futures.
     for i, future in tqdm(enumerate(futures)):
         try:
             out.append(future.result())
         except Exception as e:
             out.append(e)
     return front + out
+
 
 def get_spec_par(file):
 
@@ -76,7 +77,7 @@ def get_spec_par(file):
 
 def get_spec_par_blackman(file):
 
-    save_name='../KaggleData/spec_blackman/'
+    save_name = '../KaggleData/spec_blackman/'
 
     with aifc.open(file, 'r') as f:
         nframes = f.getnframes()
@@ -96,7 +97,7 @@ def get_spec_par_blackman(file):
 
 def get_spec_par_hamming(file):
 
-    save_name='../KaggleData/spec_hamming/'
+    save_name = '../KaggleData/spec_hamming/'
 
     with aifc.open(file, 'r') as f:
         nframes = f.getnframes()
@@ -116,7 +117,7 @@ def get_spec_par_hamming(file):
 
 def get_spec_par_halfoverlap(file):
 
-    save_name='../KaggleData/spec_halfoverlap/'
+    save_name = '../KaggleData/spec_halfoverlap/'
 
     with aifc.open(file, 'r') as f:
         nframes = f.getnframes()
@@ -135,7 +136,7 @@ def get_spec_par_halfoverlap(file):
 
 
 def partitions(items, n):
-    "Partitions the nodes into n subsets"
+    """Partitions the nodes into n subsets"""
     nodes_iter = iter(items)
     while True:
         partition = tuple(itertools.islice(nodes_iter,n))
@@ -162,6 +163,7 @@ def get_spec(data, save_name):
                 bbox_inches='tight',
                 pad_inches=0)  # Spectrogram saved as a .png
 
+
 def get_all_spec(datapath, savepath, proccesses=None):
     print('Starting...')
     files = []
@@ -172,9 +174,9 @@ def get_all_spec(datapath, savepath, proccesses=None):
     for (dirpath, dirnames, filenames) in walk(savepath):
         aux.extend(filenames)
         break
-    done=[i[:-4] for i in aux]
-    N=len(files)
-    m=float(0)
+    done = [i[:-4] for i in aux]
+    N = len(files)
+    m = float(0)
     for file_name in files:
         if file_name[:-5] not in done:
             with aifc.open(datapath + file_name, 'r') as f:
@@ -182,10 +184,10 @@ def get_all_spec(datapath, savepath, proccesses=None):
                 strsig = f.readframes(nframes)
                 data = numpy.fromstring(strsig, numpy.short).byteswap()
                 get_spec(data, savepath + file_name[:-5] + '.png')
-        done_for=m/N*100
-        if done_for%5==0:
+        done_for = m/N*100
+        if done_for % 5 == 0:
             print('Done for: '+str(done_for)+'%')
-        m+=1
+        m += 1
     print('done')
 
 

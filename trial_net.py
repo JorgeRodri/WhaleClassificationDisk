@@ -47,11 +47,11 @@ opt = keras.optimizers.SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
 nn.compile(optimizer=opt, loss='binary_crossentropy', metrics=['accuracy'])
 
 history = nn.fit_generator(data_generator,
-                        samples_per_epoch=1500,
-                        # validation_data=test_gen,
-                        nb_val_samples=3000,
-                        epochs=128,
-                        verbose=2)
+                           samples_per_epoch=1500,
+                           # validation_data=test_gen,
+                           nb_val_samples=3000,
+                           epochs=128,
+                           verbose=2)
 
 
 score = nn.evaluate_generator(test_gen, steps=20)
