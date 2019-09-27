@@ -9,8 +9,8 @@ save_path = 'results/'
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 
-tag = 'scipy_32_gray_enhanced_dropout'
-folder = 'DIYS_scipy'
+tag = 'new_32_low_dropout'
+folder = 'DIYS'
 
 
 input_size = [32, 32, 1]
@@ -73,19 +73,19 @@ history = nn.fit_generator(data_generator,
                            samples_per_epoch=data_generator.samples,
                            validation_data=val_gen,
                            validation_steps=val_gen.samples/batch_size,
-                           epochs=10,
-                           verbose=2)
+                           epochs=2,
+                           verbose=1)
 
 
 score = nn.evaluate_generator(test_gen, steps=test_gen.samples/batch_size)
 
 print(score)
 
-##Store Plots
+# Store Plots
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-#Accuracy plot
+# Accuracy plot
 plt.plot(history.history['acc'])
 plt.plot(history.history['val_acc'])
 plt.title('model accuracy')
@@ -94,7 +94,7 @@ plt.xlabel('epoch')
 plt.legend(['train','validation'], loc='upper left')
 plt.savefig(save_path + tag + 'model_accuracy' + str(score[1]) + '.pdf')
 plt.close()
-#Loss plot
+# Loss plot
 plt.plot(history.history['loss'])
 plt.plot(history.history['val_loss'])
 plt.title('model loss')
@@ -102,8 +102,6 @@ plt.ylabel('loss')
 plt.xlabel('epoch')
 plt.legend(['train'], loc='upper left')
 plt.savefig(save_path + tag + 'model_loss' + str(score[1]) + '.pdf')
-
-
 
 datagen = ImageDataGenerator()
 data_generator = datagen.flow_from_directory(
@@ -115,46 +113,47 @@ data_generator = datagen.flow_from_directory(
     class_mode='categorical')
 
 
-#Confusion Matrix
+# Confusion Matrix
 from sklearn.metrics import classification_report,confusion_matrix
 import numpy as np
-#Compute probabilities
+# Compute probabilities
 y_train = data_generator.classes
 Y_pred = nn.predict_generator(data_generator, steps=data_generator.samples/batch_size)
 # print(Y_pred.shape)
-#Assign most probable label
+# Assign most probable label
 y_pred = np.argmax(Y_pred, axis=1)
-#Plot statistics
+# Plot statistics
 print('Analysis of results')
 target_names = ['no_whale', 'whale']
 print(classification_report(y_train, y_pred, target_names=target_names))
 print(confusion_matrix(y_train, y_pred))
 
-#Confusion Matrix
+# Confusion Matrix
 from sklearn.metrics import classification_report,confusion_matrix
 import numpy as np
-#Compute probabilities
+# Compute probabilities
 y_test = test_gen.classes
 Y_pred = nn.predict_generator(test_gen, steps=test_gen.samples/batch_size)
 # print(Y_pred.shape)
-#Assign most probable label
+# Assign most probable label
 y_pred = np.argmax(Y_pred, axis=1)
-#Plot statistics
+
+# Plot statistics
 print('Analysis of results')
 target_names = ['no_whale', 'whale']
-print(classification_report(y_test, y_pred,target_names=target_names))
+print(classification_report(y_test, y_pred, target_names=target_names))
 print(confusion_matrix(y_test, y_pred))
 
 
-#Saving model and weights
-from keras.models import model_from_json
+# Saving model and weights
+# from keras.models import model_from_json
 nn_json = nn.to_json()
 with open(save_path + 'nn_' + tag +str(score[1])+ '.json', 'w') as json_file:
     json_file.write(nn_json)
 weights_file = "weights_"+ tag +str(score[1])+".hdf5"
 nn.save_weights('../weights/' + weights_file, overwrite=True)
 
-#Loading model and weights
+# Loading model and weights
 # json_file = open(save_path + 'nn' + str(score[1]) + '.json','r')
 # nn_json = json_file.read()
 # json_file.close()

@@ -1,6 +1,10 @@
 import os
 from keras.preprocessing.image import ImageDataGenerator
 
+import pandas as pd
+from os import listdir
+from os.path import isfile, join
+
 save_path = 'results/'
 tag = 'low32'
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
@@ -92,3 +96,40 @@ print(nn.summary())
 # target_names = ['no_whale', 'whale']
 # print(classification_report(y_test, y_pred,target_names=target_names))
 # print(confusion_matrix(y_test, y_pred))
+
+
+########################################################################################################################
+# Files check
+########################################################################################################################
+
+train_diys_n = "/home/jorge/Documents/DatasetsTFM/KaggleData/DIYS/Train/no_whale"
+train_diys_w = "/home/jorge/Documents/DatasetsTFM/KaggleData/DIYS/Train/whale"
+test_diys_n = "/home/jorge/Documents/DatasetsTFM/KaggleData/DIYS/Test/no_whale"
+test_diys_w = "/home/jorge/Documents/DatasetsTFM/KaggleData/DIYS/Test/whale"
+val_diys_n = "/home/jorge/Documents/DatasetsTFM/KaggleData/DIYS/Validation/no_whale"
+# test_diys_w = "/home/jorge/Documents/DatasetsTFM/KaggleData/DIYS/Validation/whale"
+
+train_file_diys_whale = [os.path.join(train_diys_w, f)
+                         for f in listdir(train_diys_w) if isfile(join(train_diys_w, f))]
+
+test_file_diys_whale = [os.path.join(test_diys_w, f)
+                        for f in listdir(test_diys_w) if isfile(join(test_diys_w, f))]
+
+# val_file_diys_whale = [os.path.join(val_diys_w, f)
+#                        for f in listdir(val_diys_w) if isfile(join(val_diys_w, f))]
+
+
+train_file_diys_no_whale = [os.path.join(train_diys_n, f)
+                           for f in listdir(train_diys_n) if isfile(join(train_diys_n, f))]
+
+test_file_diys_no_whale = [os.path.join(test_diys_n, f)
+                           for f in listdir(test_diys_n) if isfile(join(test_diys_n, f))]
+
+val_file_diys_no = [os.path.join(val_diys_n, f)
+                    for f in listdir(val_diys_n) if isfile(join(val_diys_n, f))]
+
+from collections import Counter
+
+a = test_file_diys_no_whale + test_file_diys_whale + train_file_diys_whale + train_file_diys_no_whale
+
+print(pd.DataFrame(list(map(lambda x: x.split('/')[-1], a)), columns=['labels'])['labels'].value_counts())
